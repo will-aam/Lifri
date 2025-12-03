@@ -1,0 +1,118 @@
+// Lifri - Schema Prisma para rastreamento de hábitos e vícios
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  theme     String   @default("dark") // "dark" ou "light"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  habits       Habit[]
+  diaryEntries DiaryEntry[]
+}
+
+model Habit {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String
+  icon        String   @default("cigarette") // ícone do hábito
+  color       String   @default("#F43F5E") // cor personalizada
+  startDate   DateTime @default(now()) // data que começou a abstinência
+  costPerDay  Float?   // custo diário do vício (para calcular economia)
+  frequency   Int      @default(1) // vezes por dia
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goals        Goal[]
+  reasons      Reason[]
+  achievements Achievement[]
+  relapses     Relapse[]
+  diaryEntries DiaryEntry[]
+
+  @@index([userId])
+}
+
+model Goal {
+  id        String   @id @default(cuid())
+  habitId   String
+  name      String   // ex: "1 Semana", "1 Mês"
+  days      Int      // dias necessários para atingir
+  achieved  Boolean  @default(false)
+  achievedAt DateTime?
+  createdAt DateTime @default(now())
+
+  habit Habit @relation(fields: [habitId], references: [id], onDelete: Cascade)
+
+  @@index([habitId])
+}
+
+model Reason {
+  id        String   @id @default(cuid())
+  habitId   String
+  text      String
+  createdAt DateTime @default(now())
+
+  habit Habit @relation(fields: [habitId], references: [id], onDelete: Cascade)
+
+  @@index([habitId])
+}
+
+model Achievement {
+  id         String   @id @default(cuid())
+  habitId    String
+  type       String   // "24h", "3d", "1w", "2w", "1m", "3m", "6m", "1y"
+  name       String   // "24 Horas", "3 Dias", "1 Semana", etc.
+  unlockedAt DateTime
+  createdAt  DateTime @default(now())
+
+  habit Habit @relation(fields: [habitId], references: [id], onDelete: Cascade)
+
+  @@index([habitId])
+}
+
+model Relapse {
+  id        String   @id @default(cuid())
+  habitId   String
+  date      DateTime @default(now())
+  note      String?
+  duration  Int      // duração da abstinência antes da recaída (em segundos)
+  createdAt DateTime @default(now())
+
+  habit Habit @relation(fields: [habitId], references: [id], onDelete: Cascade)
+
+  @@index([habitId])
+}
+
+model DiaryEntry {
+  id        String   @id @default(cuid())
+  userId    String
+  habitId   String?
+  date      DateTime @default(now())
+  mood      Int      @default(3) // 1-5 escala de humor
+  note      String
+  createdAt DateTime @default(now())
+
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  habit Habit? @relation(fields: [habitId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([habitId])
+}
+
+model Quote {
+  id     String @id @default(cuid())
+  text   String
+  author String
+}
