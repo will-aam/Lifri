@@ -2,13 +2,17 @@
 
 import { useState, useEffect, useCallback } from "react"
 import type { Habit, Goal, Achievement, Relapse, DiaryEntry } from "@/lib/types"
-import { mockHabits, mockAchievements, defaultGoals, mockRelapses } from "@/lib/data"
-
-const STORAGE_KEY = "lifri-habits"
-const GOALS_KEY = "lifri-goals"
-const ACHIEVEMENTS_KEY = "lifri-achievements"
-const RELAPSES_KEY = "lifri-relapses"
-const DIARY_KEY = "lifri-diary"
+import { defaultGoals } from "@/lib/data"
+import {
+  getSyncData,
+  createHabitAction,
+  updateHabitAction,
+  deleteHabitAction,
+  createGoalsAction,
+  updateGoalsAction,
+  createRelapseAction,
+  createDiaryEntryAction
+} from "@/app/actions"
 
 export function useHabits() {
   const [habits, setHabits] = useState<Habit[]>([])
@@ -18,83 +22,24 @@ export function useHabits() {
   const [diaryEntries, setDiaryEntries] = useState<DiaryEntry[]>([])
   const [mounted, setMounted] = useState(false)
 
-  // Load from localStorage
+  // Load from database on mount
   useEffect(() => {
-    setMounted(true)
-    const storedHabits = localStorage.getItem(STORAGE_KEY)
-    const storedGoals = localStorage.getItem(GOALS_KEY)
-    const storedAchievements = localStorage.getItem(ACHIEVEMENTS_KEY)
-    const storedRelapses = localStorage.getItem(RELAPSES_KEY)
-    const storedDiary = localStorage.getItem(DIARY_KEY)
-
-    if (storedHabits) {
-      const parsed = JSON.parse(storedHabits)
-      setHabits(parsed.map((h: Habit) => ({ ...h, startDate: new Date(h.startDate) })))
-    } else {
-      setHabits(mockHabits)
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(mockHabits))
+    async function load() {
+      try {
+        const data = await getSyncData()
+        setHabits(data.habits as Habit[])
+        setGoals(data.goals as Goal[])
+        setAchievements(data.achievements as Achievement[])
+        setRelapses(data.relapses as Relapse[])
+        setDiaryEntries(data.diaryEntries as DiaryEntry[])
+      } catch (err) {
+        console.error("Failed to sync from database:", err)
+      } finally {
+        setMounted(true)
+      }
     }
-
-    if (storedGoals) {
-      const parsed = JSON.parse(storedGoals)
-      setGoals(
-        parsed.map((g: Goal) => ({
-          ...g,
-          achievedAt: g.achievedAt ? new Date(g.achievedAt) : undefined,
-        })),
-      )
-    }
-
-    if (storedAchievements) {
-      const parsed = JSON.parse(storedAchievements)
-      setAchievements(
-        parsed.map((a: Achievement) => ({
-          ...a,
-          unlockedAt: new Date(a.unlockedAt),
-        })),
-      )
-    } else {
-      setAchievements(mockAchievements)
-    }
-
-    if (storedRelapses) {
-      const parsed = JSON.parse(storedRelapses)
-      setRelapses(parsed.map((r: Relapse) => ({ ...r, date: new Date(r.date) })))
-    } else {
-      setRelapses(mockRelapses)
-    }
-
-    if (storedDiary) {
-      const parsed = JSON.parse(storedDiary)
-      setDiaryEntries(parsed.map((d: DiaryEntry) => ({ ...d, date: new Date(d.date) })))
-    }
+    load()
   }, [])
-
-  // Save to localStorage
-  useEffect(() => {
-    if (!mounted) return
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(habits))
-  }, [habits, mounted])
-
-  useEffect(() => {
-    if (!mounted) return
-    localStorage.setItem(GOALS_KEY, JSON.stringify(goals))
-  }, [goals, mounted])
-
-  useEffect(() => {
-    if (!mounted) return
-    localStorage.setItem(ACHIEVEMENTS_KEY, JSON.stringify(achievements))
-  }, [achievements, mounted])
-
-  useEffect(() => {
-    if (!mounted) return
-    localStorage.setItem(RELAPSES_KEY, JSON.stringify(relapses))
-  }, [relapses, mounted])
-
-  useEffect(() => {
-    if (!mounted) return
-    localStorage.setItem(DIARY_KEY, JSON.stringify(diaryEntries))
-  }, [diaryEntries, mounted])
 
   const addHabit = useCallback((habit: Omit<Habit, "id" | "isActive">) => {
     const newHabit: Habit = {
@@ -112,11 +57,18 @@ export function useHabits() {
     }))
     setGoals((prev) => [...prev, ...newGoals])
 
+    // API calls (fire and forget)
+    createHabitAction(newHabit)
+    createGoalsAction(newGoals)
+
     return newHabit
   }, [])
 
   const updateHabit = useCallback((id: string, updates: Partial<Habit>) => {
     setHabits((prev) => prev.map((h) => (h.id === id ? { ...h, ...updates } : h)))
+    
+    // API call
+    updateHabitAction(id, updates)
   }, [])
 
   const deleteHabit = useCallback((id: string) => {
@@ -124,6 +76,9 @@ export function useHabits() {
     setGoals((prev) => prev.filter((g) => g.habitId !== id))
     setAchievements((prev) => prev.filter((a) => a.habitId !== id))
     setRelapses((prev) => prev.filter((r) => r.habitId !== id))
+
+    // API call
+    deleteHabitAction(id)
   }, [])
 
   const resetTimer = useCallback(
@@ -144,13 +99,18 @@ export function useHabits() {
       }
       setRelapses((prev) => [...prev, relapse])
 
-      // Reset start date to the relapse date (recomeça a partir dali)
+      // Reset start date to the relapse date
       setHabits((prev) => prev.map((h) => (h.id === habitId ? { ...h, startDate: effectiveRelapseDate } : h)))
 
       // Reset goals
       setGoals((prev) =>
         prev.map((g) => (g.habitId === habitId ? { ...g, achieved: false, achievedAt: undefined } : g)),
       )
+
+      // API calls
+      createRelapseAction(relapse)
+      updateHabitAction(habitId, { startDate: effectiveRelapseDate })
+      updateGoalsAction(habitId)
     },
     [habits],
   )
@@ -161,6 +121,9 @@ export function useHabits() {
       id: crypto.randomUUID(),
     }
     setDiaryEntries((prev) => [...prev, newEntry])
+
+    // API call
+    createDiaryEntryAction(newEntry)
   }, [])
 
   const getHabitGoals = useCallback(

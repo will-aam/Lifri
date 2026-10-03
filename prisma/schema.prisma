@@ -9,21 +9,8 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String?
-  theme     String   @default("dark") // "dark" ou "light"
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  habits       Habit[]
-  diaryEntries DiaryEntry[]
-}
-
 model Habit {
   id          String   @id @default(cuid())
-  userId      String
   name        String
   icon        String   @default("cigarette") // ícone do hábito
   color       String   @default("#F43F5E") // cor personalizada
@@ -34,14 +21,11 @@ model Habit {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   goals        Goal[]
   reasons      Reason[]
   achievements Achievement[]
   relapses     Relapse[]
   diaryEntries DiaryEntry[]
-
-  @@index([userId])
 }
 
 model Goal {
@@ -97,17 +81,14 @@ model Relapse {
 
 model DiaryEntry {
   id        String   @id @default(cuid())
-  userId    String
   habitId   String?
   date      DateTime @default(now())
   mood      Int      @default(3) // 1-5 escala de humor
   note      String
   createdAt DateTime @default(now())
 
-  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   habit Habit? @relation(fields: [habitId], references: [id], onDelete: Cascade)
 
-  @@index([userId])
   @@index([habitId])
 }
 
