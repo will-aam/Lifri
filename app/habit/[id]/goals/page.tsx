@@ -8,14 +8,14 @@ import { Button } from "@/components/ui/button"
 import { useHabits } from "@/hooks/use-habits"
 import { calculateProgress } from "@/lib/utils"
 import { cn } from "@/lib/utils"
-import { Check, Shield, Award, Trophy, Star, Crown, Medal, Gem, Flame } from "lucide-react"
+import { CheckIcon, ShieldCheckIcon, StarIcon, TrophyIcon, SparklesIcon, FireIcon } from '@heroicons/react/24/outline'
 import { defaultGoals } from "@/lib/data"
 
 interface GoalsPageProps {
   params: Promise<{ id: string }>
 }
 
-const goalIcons = [Shield, Award, Trophy, Star, Crown, Medal, Gem, Flame, Crown]
+const goalIcons = [ShieldCheckIcon, StarIcon, TrophyIcon, StarIcon, SparklesIcon, TrophyIcon, SparklesIcon, FireIcon, SparklesIcon]
 const goalColors = {
   achieved: ["#10B981", "#059669"], // green
   pending: ["#9CA3AF", "#6B7280"], // gray
@@ -78,7 +78,7 @@ export default function GoalsPage({ params }: GoalsPageProps) {
             return (
               <div key={goal.id} className="bg-card border border-border rounded-xl p-4">
                 <div className="flex items-center gap-4">
-                  {/* Trophy Badge */}
+                  {/* TrophyIcon Badge */}
                   <div className="relative">
                     <div
                       className={cn(
@@ -92,7 +92,7 @@ export default function GoalsPage({ params }: GoalsPageProps) {
                     </div>
                     {isAchieved && (
                       <div className="absolute -top-1 -right-1 w-5 h-5 bg-success rounded-full flex items-center justify-center">
-                        <Check className="h-3 w-3 text-white" />
+                        <CheckIcon className="h-3 w-3 text-white" />
                       </div>
                     )}
                     <div

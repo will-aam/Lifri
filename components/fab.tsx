@@ -1,6 +1,6 @@
 "use client"
 
-import { Plus } from "lucide-react"
+import { PlusIcon } from "@heroicons/react/24/outline"
 import { cn } from "@/lib/utils"
 
 interface FABProps {
@@ -18,7 +18,7 @@ export function FAB({ onClick, className }: FABProps) {
       )}
       aria-label="Adicionar habito"
     >
-      <Plus className="h-6 w-6" strokeWidth={2.5} />
+      <PlusIcon className="h-6 w-6" strokeWidth={2.5} />
     </button>
   )
 }

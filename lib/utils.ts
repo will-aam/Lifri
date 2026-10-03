@@ -46,14 +46,4 @@ export function getElapsedSeconds(startDate: Date): number {
   return Math.floor((new Date().getTime() - startDate.getTime()) / 1000)
 }
 
-export function formatMoney(amount: number): string {
-  return new Intl.NumberFormat("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  }).format(amount)
-}
 
-export function calculateSavings(costPerDay: number, seconds: number): number {
-  const days = seconds / (24 * 60 * 60)
-  return costPerDay * days
-}

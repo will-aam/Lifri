@@ -1,17 +1,13 @@
 "use client"
 
-import { useState } from "react"
 import { MobileShell } from "@/components/mobile-shell"
 import { BottomNav } from "@/components/bottom-nav"
 import { QuoteCard } from "@/components/quote-card"
 import { HabitCard } from "@/components/habit-card"
-import { FAB } from "@/components/fab"
-import { AddHabitModal } from "@/components/add-habit-modal"
 import { useHabits } from "@/hooks/use-habits"
 
 export default function HomePage() {
-  const { habits, addHabit, mounted } = useHabits()
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const { habits, mounted } = useHabits()
 
   if (!mounted) {
     return (
@@ -27,8 +23,6 @@ export default function HomePage() {
     <MobileShell>
       <main className="flex-1 overflow-y-auto overscroll-contain">
         <div className="p-4 pb-28 space-y-4">
-          <h1 className="text-xl sm:text-2xl font-bold text-foreground">Resumo</h1>
-
           <QuoteCard />
 
           {habits.length === 0 ? (
@@ -39,7 +33,7 @@ export default function HomePage() {
               </p>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-5">
               <h2 className="text-xs sm:text-sm font-medium text-muted-foreground uppercase tracking-wide">
                 Comprometo-me a abandonar:
               </h2>
@@ -51,10 +45,7 @@ export default function HomePage() {
         </div>
       </main>
 
-      <FAB onClick={() => setIsModalOpen(true)} />
       <BottomNav />
-
-      <AddHabitModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onAdd={addHabit} />
     </MobileShell>
   )
 }

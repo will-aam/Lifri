@@ -1,7 +1,7 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { Check, Lock, Shield, Award, Trophy, Star, Crown } from "lucide-react"
+import { CheckIcon, LockClosedIcon, ShieldCheckIcon, StarIcon, TrophyIcon, SparklesIcon } from '@heroicons/react/24/outline'
 
 interface TrophyBadgeProps {
   name: string
@@ -12,12 +12,12 @@ interface TrophyBadgeProps {
 }
 
 const getBadgeIcon = (name: string) => {
-  if (name.includes("Hora")) return Shield
-  if (name.includes("Dia")) return Award
-  if (name.includes("Semana")) return Trophy
-  if (name.includes("Mês") || name.includes("Meses")) return Star
-  if (name.includes("Ano")) return Crown
-  return Trophy
+  if (name.includes("Hora")) return ShieldCheckIcon
+  if (name.includes("Dia")) return StarIcon
+  if (name.includes("Semana")) return TrophyIcon
+  if (name.includes("Mês") || name.includes("Meses")) return StarIcon
+  if (name.includes("Ano")) return SparklesIcon
+  return TrophyIcon
 }
 
 export function TrophyBadge({ name, days, achieved, progress, color = "#10B981" }: TrophyBadgeProps) {
@@ -36,7 +36,7 @@ export function TrophyBadge({ name, days, achieved, progress, color = "#10B981" 
                 : "bg-gradient-to-br from-gray-400 to-gray-500",
             )}
           >
-            {achieved ? <BadgeIcon className="h-8 w-8 text-white" /> : <Lock className="h-6 w-6 text-white/70" />}
+            {achieved ? <BadgeIcon className="h-8 w-8 text-white" /> : <LockClosedIcon className="h-6 w-6 text-white/70" />}
           </div>
 
           {/* Name Banner */}
@@ -51,7 +51,7 @@ export function TrophyBadge({ name, days, achieved, progress, color = "#10B981" 
 
           {achieved && (
             <div className="absolute -top-1 -right-1 w-5 h-5 bg-success rounded-full flex items-center justify-center ring-2 ring-card">
-              <Check className="h-3 w-3 text-white" />
+              <CheckIcon className="h-3 w-3 text-white" />
             </div>
           )}
         </div>

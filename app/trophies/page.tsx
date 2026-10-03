@@ -8,7 +8,7 @@ import { HabitIcon } from "@/components/habit-icon"
 import { useHabits } from "@/hooks/use-habits"
 import { calculateProgress } from "@/lib/utils"
 import { cn } from "@/lib/utils"
-import { Trophy } from "lucide-react"
+import { TrophyIcon } from "@heroicons/react/24/outline"
 
 const ACHIEVEMENT_LEVELS = [
   { type: "24h", name: "24 Horas", days: 1 },
@@ -44,13 +44,13 @@ export default function TrophiesPage() {
       <main className="flex-1 overflow-y-auto pb-24">
         <div className="p-4 space-y-4">
           <div className="flex items-center gap-2">
-            <Trophy className="h-6 w-6 text-primary" />
+            <TrophyIcon className="h-6 w-6 text-primary" />
             <h1 className="text-2xl font-bold text-foreground">Troféus</h1>
           </div>
 
           {habits.length === 0 ? (
             <div className="text-center py-12">
-              <Trophy className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <TrophyIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <p className="text-muted-foreground">Nenhum hábito cadastrado</p>
               <p className="text-sm text-muted-foreground mt-1">Adicione um hábito para começar a ganhar troféus</p>
             </div>

@@ -7,7 +7,7 @@ import { HabitHeader } from "@/components/habit-header"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useHabits } from "@/hooks/use-habits"
-import { Plus, Sparkles, Trash2, Heart } from "lucide-react"
+import { PlusIcon, SparklesIcon, TrashIcon, HeartIcon } from "@heroicons/react/24/outline"
 
 interface ReasonsPageProps {
   params: Promise<{ id: string }>
@@ -87,7 +87,7 @@ export default function ReasonsPage({ params }: ReasonsPageProps) {
         <div className="p-4 space-y-4">
           <div className="bg-gradient-to-br from-primary/20 to-primary/5 rounded-2xl p-4">
             <div className="flex items-center gap-2 mb-2">
-              <Sparkles className="h-5 w-5 text-primary" />
+              <SparklesIcon className="h-5 w-5 text-primary" />
               <h2 className="font-semibold text-foreground">Por que você quer parar?</h2>
             </div>
             <p className="text-sm text-muted-foreground">
@@ -103,13 +103,13 @@ export default function ReasonsPage({ params }: ReasonsPageProps) {
               onKeyDown={(e) => e.key === "Enter" && handleAddReason()}
             />
             <Button onClick={handleAddReason} size="icon">
-              <Plus className="h-5 w-5" />
+              <PlusIcon className="h-5 w-5" />
             </Button>
           </div>
 
           {reasons.length === 0 ? (
             <div className="text-center py-8">
-              <Heart className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <HeartIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <p className="text-muted-foreground">Nenhuma razão cadastrada ainda</p>
             </div>
           ) : (
@@ -124,7 +124,7 @@ export default function ReasonsPage({ params }: ReasonsPageProps) {
                     onClick={() => handleDeleteReason(reason.id)}
                     className="p-2 text-muted-foreground hover:text-destructive transition-colors"
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <TrashIcon className="h-4 w-4" />
                   </button>
                 </div>
               ))}

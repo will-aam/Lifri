@@ -1,7 +1,7 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { ArrowLeft, Send } from "lucide-react"
+import { ArrowLeftIcon, PaperAirplaneIcon } from "@heroicons/react/24/outline"
 import type { ReactNode } from "react"
 
 interface HabitHeaderProps {
@@ -15,25 +15,19 @@ export function HabitHeader({ title, habitId, onShare, rightAction }: HabitHeade
   const router = useRouter()
 
   return (
-    <header className="flex items-center justify-between px-2 py-3 border-b border-border bg-card shrink-0">
+    <header className="flex items-center justify-between px-2 py-3 shrink-0 bg-transparent">
       <button
         onClick={() => router.back()}
         className="p-2.5 hover:bg-muted active:bg-muted/80 rounded-xl transition-colors touch-feedback"
         aria-label="Voltar"
       >
-        <ArrowLeft className="h-5 w-5" />
+        <ArrowLeftIcon className="h-5 w-5" />
       </button>
       <h1 className="font-semibold text-foreground text-sm sm:text-base truncate max-w-[60%]">{title}</h1>
       {rightAction ? (
         rightAction
       ) : (
-        <button
-          onClick={onShare}
-          className="p-2.5 hover:bg-muted active:bg-muted/80 rounded-xl transition-colors touch-feedback"
-          aria-label="Compartilhar"
-        >
-          <Send className="h-5 w-5 text-primary" />
-        </button>
+        <div className="w-10" />
       )}
     </header>
   )

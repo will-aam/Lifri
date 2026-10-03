@@ -3,9 +3,27 @@
 import { useState, useEffect } from "react"
 import type { Habit } from "@/lib/types"
 import { HabitIcon } from "@/components/habit-icon"
-import { formatDuration, calculateProgress, getElapsedSeconds, formatMoney, calculateSavings } from "@/lib/utils"
-import { MoreVertical } from "lucide-react"
+import { formatDuration, calculateProgress, getElapsedSeconds } from "@/lib/utils"
+import {
+  EllipsisVerticalIcon,
+  PencilIcon,
+  TrashIcon,
+  ArrowPathIcon,
+  ClockIcon,
+  FireIcon,
+  CalendarDaysIcon,
+} from "@heroicons/react/24/outline"
 import Link from "next/link"
+import { useHabits } from "@/hooks/use-habits"
+import { ResetTimerModal } from "@/components/reset-timer-modal"
+import { EditHabitModal } from "@/components/edit-habit-modal"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 interface HabitCardProps {
   habit: Habit
@@ -14,6 +32,9 @@ interface HabitCardProps {
 }
 
 export function HabitCard({ habit, goalDays = 7, onMenu }: HabitCardProps) {
+  const { resetTimer, updateHabit } = useHabits()
+  const [isResetOpen, setIsResetOpen] = useState(false)
+  const [isEditOpen, setIsEditOpen] = useState(false)
   const [elapsed, setElapsed] = useState(getElapsedSeconds(habit.startDate))
 
   useEffect(() => {
@@ -24,84 +45,116 @@ export function HabitCard({ habit, goalDays = 7, onMenu }: HabitCardProps) {
   }, [habit.startDate])
 
   const progress = calculateProgress(habit.startDate, goalDays)
-  const circumference = 2 * Math.PI * 36
-  const strokeDashoffset = circumference - (progress / 100) * circumference
-
-  const goalLabel =
-    goalDays === 1 ? "1 DIA" : goalDays === 7 ? "1 SEMANA" : goalDays === 30 ? "1 MES" : `${goalDays} DIAS`
+  const daysPassed = Math.floor(elapsed / 86400)
+  const hoursPassed = Math.floor((elapsed % 86400) / 3600)
 
   return (
-    <Link href={`/habit/${habit.id}`} className="block">
-      <div className="bg-card rounded-2xl p-3 sm:p-4 border border-border active:border-primary/50 transition-all card-press">
-        <div className="flex items-center gap-3">
-          {/* Icon */}
-          <div
-            className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center shrink-0"
-            style={{ backgroundColor: `${habit.color}20` }}
-          >
-            <HabitIcon icon={habit.icon} color={habit.color} className="h-5 w-5 sm:h-6 sm:w-6" />
+    <>
+      <Link href={`/habit/${habit.id}`} className="block">
+        <div
+          className="relative bg-card rounded-2xl border border-border active:scale-[0.98] transition-all duration-150 overflow-hidden"
+          style={{ borderColor: `${habit.color}25` }}
+        >
+
+          {/* Background watermark — smaller, corners */}
+          <div className="absolute -right-6 -bottom-6 opacity-[0.06] pointer-events-none">
+            <HabitIcon icon={habit.icon} className="w-24 h-24" />
+          </div>
+          <div className="absolute -left-4 -top-4 opacity-[0.04] pointer-events-none rotate-12">
+            <HabitIcon icon={habit.icon} className="w-16 h-16" />
           </div>
 
-          {/* Info */}
-          <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-foreground text-sm sm:text-base truncate">{habit.name}</h3>
-            <p className="text-[10px] sm:text-xs text-muted-foreground">Tempo de abstinencia</p>
-            <p className="text-base sm:text-lg font-bold text-foreground tabular-nums">{formatDuration(elapsed)}</p>
-            {habit.costPerDay && habit.costPerDay > 0 && (
-              <p className="text-[10px] sm:text-xs text-success">
-                Economizado: {formatMoney(calculateSavings(habit.costPerDay, elapsed))}
-              </p>
-            )}
-          </div>
+          <div className="relative z-10 p-4">
+            {/* Top row: name + menu */}
+            <div className="flex items-start justify-between mb-3">
+              <div className="flex-1 min-w-0 pr-2">
+                <h3 className="font-semibold text-foreground text-sm truncate">{habit.name}</h3>
+              </div>
 
-          {/* Progress circle */}
-          <div className="flex items-center gap-1 shrink-0">
-            <div className="relative w-16 h-16 sm:w-20 sm:h-20">
-              <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="36"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="6"
-                  className="text-muted/30"
-                />
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="36"
-                  fill="none"
-                  stroke={habit.color}
-                  strokeWidth="6"
-                  strokeLinecap="round"
-                  strokeDasharray={circumference}
-                  strokeDashoffset={strokeDashoffset}
-                  className="progress-animate"
-                />
-              </svg>
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-sm sm:text-base font-bold tabular-nums" style={{ color: habit.color }}>
-                  {Math.round(progress)}%
-                </span>
-                <span className="text-[8px] sm:text-[10px] text-muted-foreground leading-none">{goalLabel}</span>
+              <div onClick={(e) => { e.preventDefault(); e.stopPropagation() }}>
+                <button
+                  onClick={() => setIsEditOpen(true)}
+                  className="p-1 -mr-1 -mt-1 rounded-full shrink-0 relative outline-none active:bg-muted/60 transition-colors"
+                  aria-label="Editar"
+                >
+                  <PencilIcon className="h-4 w-4 text-muted-foreground" />
+                </button>
               </div>
             </div>
 
-            <button
-              onClick={(e) => {
-                e.preventDefault()
-                e.stopPropagation()
-                onMenu?.()
-              }}
-              className="p-2 -mr-1 hover:bg-muted rounded-lg transition-colors touch-feedback"
-              aria-label="Menu"
-            >
-              <MoreVertical className="h-5 w-5 text-muted-foreground" />
-            </button>
+            {/* Timer + icon stats row */}
+            <div className="flex items-end justify-between mb-4">
+              <div>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-widest mb-0.5 font-medium">Abstinência</p>
+                <p
+                  className="text-2xl font-bold tabular-nums tracking-tight"
+                  style={{ color: habit.color }}
+                >
+                  {formatDuration(elapsed)}
+                </p>
+              </div>
+
+              {/* Mini stats chips */}
+              <div className="flex flex-col items-end gap-1.5">
+                <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                  <CalendarDaysIcon className="h-3 w-3" />
+                  <span className="font-medium tabular-nums">{daysPassed}d</span>
+                </div>
+                <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                  <ClockIcon className="h-3 w-3" />
+                  <span className="font-medium tabular-nums">{hoursPassed}h hoje</span>
+                </div>
+                <div className="flex items-center gap-1 text-[10px]" style={{ color: habit.color }}>
+                  <FireIcon className="h-3 w-3" />
+                  <span className="font-medium tabular-nums">{Math.round(progress)}%</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Progress bar + reset button */}
+            <div className="flex items-center gap-3">
+              <div className="flex-1 h-1 bg-border rounded-full overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all duration-1000 ease-out"
+                  style={{
+                    width: `${Math.min(progress, 100)}%`,
+                    backgroundColor: habit.color,
+                  }}
+                />
+              </div>
+              <button
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  setIsResetOpen(true)
+                }}
+                className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full outline-none active:opacity-70 transition-opacity shrink-0"
+                style={{
+                  backgroundColor: habit.color,
+                  color: '#fff',
+                }}
+              >
+                <ArrowPathIcon className="h-3 w-3" />
+                Resetar
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    </Link>
+      </Link>
+
+      <ResetTimerModal
+        isOpen={isResetOpen}
+        onClose={() => setIsResetOpen(false)}
+        onConfirm={(note, date) => resetTimer(habit.id, note, date)}
+        habitName={habit.name}
+        habitStartDate={habit.startDate}
+      />
+      <EditHabitModal 
+        isOpen={isEditOpen}
+        onClose={() => setIsEditOpen(false)}
+        onEdit={updateHabit}
+        habit={habit}
+      />
+    </>
   )
 }

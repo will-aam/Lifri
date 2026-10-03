@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -11,17 +11,18 @@ import { cn } from "@/lib/utils"
 import { XMarkIcon } from "@heroicons/react/24/outline"
 import type { Habit } from "@/lib/types"
 
-interface AddHabitModalProps {
+interface EditHabitModalProps {
   isOpen: boolean
   onClose: () => void
-  onAdd: (habit: Omit<Habit, "id" | "isActive">) => void
+  onEdit: (id: string, updates: Partial<Habit>) => void
+  habit: Habit
 }
 
 const iconLabels: { [key: string]: string } = {
   cigarette: "Cigarro",
-  alcohol: "Alcool",
-  coffee: "Cafe",
-  sugar: "Acucar",
+  alcohol: "Álcool",
+  coffee: "Café",
+  sugar: "Açúcar",
   social: "Redes Sociais",
   gambling: "Apostas",
   shopping: "Compras",
@@ -33,10 +34,19 @@ const iconLabels: { [key: string]: string } = {
   other: "Outro",
 }
 
-export function AddHabitModal({ isOpen, onClose, onAdd }: AddHabitModalProps) {
-  const [name, setName] = useState("")
-  const [icon, setIcon] = useState("cigarette")
-  const [color, setColor] = useState(habitColors[0])
+export function EditHabitModal({ isOpen, onClose, onEdit, habit }: EditHabitModalProps) {
+  const [name, setName] = useState(habit.name)
+  const [icon, setIcon] = useState(habit.icon)
+  const [color, setColor] = useState(habit.color)
+
+  // Reset state when habit changes
+  useEffect(() => {
+    if (isOpen) {
+      setName(habit.name)
+      setIcon(habit.icon)
+      setColor(habit.color)
+    }
+  }, [habit, isOpen])
 
   if (!isOpen) return null
 
@@ -44,17 +54,12 @@ export function AddHabitModal({ isOpen, onClose, onAdd }: AddHabitModalProps) {
     e.preventDefault()
     if (!name.trim()) return
 
-    onAdd({
+    onEdit(habit.id, {
       name: name.trim(),
       icon,
       color,
-      startDate: new Date(),
-      frequency: 1,
     })
-
-    setName("")
-    setIcon("cigarette")
-    setColor(habitColors[0])
+    
     onClose()
   }
 
@@ -68,7 +73,7 @@ export function AddHabitModal({ isOpen, onClose, onAdd }: AddHabitModalProps) {
         <div className="w-10 h-1 bg-muted-foreground/30 rounded-full mx-auto mb-4 sm:hidden" />
 
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-lg sm:text-xl font-bold text-foreground">Novo Habito</h2>
+          <h2 className="text-lg sm:text-xl font-bold text-foreground">Editar Hábito</h2>
           <button
             onClick={onClose}
             className="p-2 hover:bg-muted rounded-lg transition-colors touch-feedback"
@@ -80,20 +85,20 @@ export function AddHabitModal({ isOpen, onClose, onAdd }: AddHabitModalProps) {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="name" className="text-sm">
-              Nome do habito
+            <Label htmlFor="edit-name" className="text-sm">
+              Nome do hábito
             </Label>
             <Input
-              id="name"
+              id="edit-name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Ex: Alcool, Cigarro..."
+              placeholder="Ex: Álcool, Cigarro..."
               className="mt-1.5 h-11"
             />
           </div>
 
           <div>
-            <Label className="text-sm">Icone</Label>
+            <Label className="text-sm">Ícone</Label>
             <div className="grid grid-cols-4 sm:grid-cols-5 gap-2 mt-1.5">
               {availableIcons.map((key) => (
                 <button
@@ -134,13 +139,12 @@ export function AddHabitModal({ isOpen, onClose, onAdd }: AddHabitModalProps) {
             </div>
           </div>
 
-
           <div className="flex gap-3 pt-3 pb-2">
             <Button type="button" variant="outline" onClick={onClose} className="flex-1 h-11 bg-transparent">
               Cancelar
             </Button>
             <Button type="submit" className="flex-1 h-11">
-              Adicionar
+              Salvar
             </Button>
           </div>
         </form>

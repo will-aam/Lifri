@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { X, AlertTriangle, CalendarDays, ChevronLeft, ChevronRight } from "lucide-react"
+import { XMarkIcon, ExclamationTriangleIcon, CalendarDaysIcon, ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline"
 import { cn } from "@/lib/utils"
 
 interface ResetTimerModalProps {
@@ -89,7 +89,7 @@ export function ResetTimerModal({ isOpen, onClose, onConfirm, habitName, habitSt
 
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2 text-destructive">
-            <AlertTriangle className="h-5 w-5" />
+            <ExclamationTriangleIcon className="h-5 w-5" />
             <h2 className="text-base sm:text-lg font-bold">Resetar Timer</h2>
           </div>
           <button
@@ -97,7 +97,7 @@ export function ResetTimerModal({ isOpen, onClose, onConfirm, habitName, habitSt
             className="p-2 hover:bg-muted rounded-lg transition-colors touch-feedback"
             aria-label="Fechar"
           >
-            <X className="h-5 w-5" />
+            <XMarkIcon className="h-5 w-5" />
           </button>
         </div>
 
@@ -112,7 +112,7 @@ export function ResetTimerModal({ isOpen, onClose, onConfirm, habitName, habitSt
             className="w-full flex items-center justify-between p-3.5 bg-muted/50 rounded-xl border border-border active:border-primary/30 transition-colors touch-feedback"
           >
             <div className="flex items-center gap-3">
-              <CalendarDays className="h-5 w-5 text-primary" />
+              <CalendarDaysIcon className="h-5 w-5 text-primary" />
               <div className="text-left">
                 <p className="text-sm font-medium text-foreground">Data da recaida</p>
                 <p className="text-xs text-muted-foreground">
@@ -124,7 +124,7 @@ export function ResetTimerModal({ isOpen, onClose, onConfirm, habitName, habitSt
                 </p>
               </div>
             </div>
-            <ChevronRight
+            <ChevronRightIcon
               className={cn("h-5 w-5 text-muted-foreground transition-transform", showDatePicker && "rotate-90")}
             />
           </button>
@@ -136,7 +136,7 @@ export function ResetTimerModal({ isOpen, onClose, onConfirm, habitName, habitSt
                   onClick={() => setCurrentMonth(new Date(year, month - 1, 1))}
                   className="p-2.5 hover:bg-muted rounded-lg transition-colors touch-feedback"
                 >
-                  <ChevronLeft className="h-4 w-4" />
+                  <ChevronLeftIcon className="h-4 w-4" />
                 </button>
                 <span className="font-medium text-sm text-foreground">
                   {MONTHS[month]} {year}
@@ -145,7 +145,7 @@ export function ResetTimerModal({ isOpen, onClose, onConfirm, habitName, habitSt
                   onClick={() => setCurrentMonth(new Date(year, month + 1, 1))}
                   className="p-2.5 hover:bg-muted rounded-lg transition-colors touch-feedback"
                 >
-                  <ChevronRight className="h-4 w-4" />
+                  <ChevronRightIcon className="h-4 w-4" />
                 </button>
               </div>
 

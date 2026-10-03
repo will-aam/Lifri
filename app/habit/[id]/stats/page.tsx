@@ -7,7 +7,7 @@ import { HabitHeader } from "@/components/habit-header"
 import { Button } from "@/components/ui/button"
 import { useHabits } from "@/hooks/use-habits"
 import { formatDuration } from "@/lib/utils"
-import { Calendar, TrendingUp, TrendingDown, Activity, Clock, RotateCcw, Share2, Hourglass } from "lucide-react"
+import { CalendarIcon, ArrowTrendingUpIcon, ArrowTrendingDownIcon, ChartBarSquareIcon, ClockIcon, ArrowPathIcon } from '@heroicons/react/24/outline'
 
 export default function StatsPage() {
   const params = useParams()
@@ -71,8 +71,8 @@ export default function StatsPage() {
 
   const stats = [
     {
-      icon: Calendar,
-      label: "O dia em que desistiu",
+      icon: CalendarIcon,
+      label: "Dia em que parou",
       value: habit.startDate.toLocaleDateString("pt-BR", {
         weekday: "long",
         day: "numeric",
@@ -81,28 +81,28 @@ export default function StatsPage() {
       }),
     },
     {
-      icon: TrendingUp,
+      icon: ArrowTrendingUpIcon,
       label: "Periodo maximo de abstinencia",
       value: statistics.maxAbstinence > 0 ? formatDuration(statistics.maxAbstinence) : "Ainda sem dados",
     },
     {
-      icon: TrendingDown,
+      icon: ArrowTrendingDownIcon,
       label: "Periodo minimo de abstinencia",
       value: statistics.minAbstinence > 0 ? formatDuration(statistics.minAbstinence) : "Ainda sem dados",
     },
     {
-      icon: Activity,
-      label: "Periodo em media de abstinencia",
+      icon: ChartBarSquareIcon,
+      label: "Periodo medio de abstinencia",
       value: statistics.avgAbstinence > 0 ? formatDuration(Math.round(statistics.avgAbstinence)) : "Ainda sem dados",
     },
     {
-      icon: Hourglass,
-      label: "Tempo anterior de abstinencia",
+      icon: ClockIcon,
+      label: "Periodo anterior de abstinencia",
       value:
         statistics.previousAbstinence > 0 ? formatDuration(statistics.previousAbstinence) : "Sem recaidas anteriores",
     },
     {
-      icon: RotateCcw,
+      icon: ArrowPathIcon,
       label: "Numero de reinicializacoes do cronometro",
       value: statistics.totalResets.toString(),
     },
@@ -113,18 +113,13 @@ export default function StatsPage() {
       <HabitHeader
         title={habit.name}
         habitId={habit.id}
-        rightAction={
-          <button className="p-2.5 hover:bg-muted active:bg-muted/80 rounded-xl transition-colors touch-feedback">
-            <Share2 className="h-5 w-5 text-primary" />
-          </button>
-        }
       />
 
       <main className="flex-1 overflow-y-auto overscroll-contain">
         {/* Section Header */}
         <div className="bg-muted/50 border-b border-border">
           <div className="px-4 py-2.5 sm:py-3">
-            <h2 className="text-xs sm:text-sm font-medium text-muted-foreground">Estatistica</h2>
+            <h2 className="text-xs sm:text-sm font-medium text-muted-foreground">Progresso</h2>
           </div>
         </div>
 
@@ -143,14 +138,13 @@ export default function StatsPage() {
           ))}
         </div>
 
-        <div className="p-4 mt-2">
-          <div className="bg-primary/5 border border-primary/20 rounded-2xl p-4">
-            <div className="flex items-center gap-3 mb-2">
-              <Clock className="h-5 w-5 text-primary" />
-              <span className="text-sm font-medium text-foreground">Tempo atual de abstinencia</span>
-            </div>
-            <p className="text-2xl font-bold text-primary">{formatDuration(statistics.currentAbstinence)}</p>
-          </div>
+        <div className="p-4 mt-2 space-y-4">
+          <Button
+            className="w-full h-12 gap-2 rounded-xl text-base"
+            onClick={() => router.push(`/habit/${habit.id}/stats/charts`)}
+          >
+            Ver Graficos
+          </Button>
         </div>
       </main>
     </MobileShell>

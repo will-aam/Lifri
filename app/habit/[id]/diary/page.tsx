@@ -8,18 +8,18 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { useHabits } from "@/hooks/use-habits"
 import { cn } from "@/lib/utils"
-import { Plus, Frown, Meh, Smile, Heart, Sparkles } from "lucide-react"
+import { PlusIcon, FaceFrownIcon, FaceSmileIcon, HeartIcon, SparklesIcon } from '@heroicons/react/24/outline'
 
 interface DiaryPageProps {
   params: Promise<{ id: string }>
 }
 
 const MOODS = [
-  { value: 1, icon: Frown, label: "Muito mal", color: "text-destructive" },
-  { value: 2, icon: Frown, label: "Mal", color: "text-orange-500" },
-  { value: 3, icon: Meh, label: "Normal", color: "text-muted-foreground" },
-  { value: 4, icon: Smile, label: "Bem", color: "text-success" },
-  { value: 5, icon: Heart, label: "Muito bem", color: "text-primary" },
+  { value: 1, icon: FaceFrownIcon, label: "Muito mal", color: "text-destructive" },
+  { value: 2, icon: FaceFrownIcon, label: "Mal", color: "text-orange-500" },
+  { value: 3, icon: FaceFrownIcon, label: "Normal", color: "text-muted-foreground" },
+  { value: 4, icon: FaceSmileIcon, label: "Bem", color: "text-success" },
+  { value: 5, icon: HeartIcon, label: "Muito bem", color: "text-primary" },
 ]
 
 export default function DiaryPage({ params }: DiaryPageProps) {
@@ -76,7 +76,7 @@ export default function DiaryPage({ params }: DiaryPageProps) {
           <div className="p-4 flex items-center justify-between">
             <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Diário</h2>
             <Button size="sm" onClick={() => setIsAdding(true)} className="gap-1">
-              <Plus className="h-4 w-4" />
+              <PlusIcon className="h-4 w-4" />
               Nova entrada
             </Button>
           </div>
@@ -125,7 +125,7 @@ export default function DiaryPage({ params }: DiaryPageProps) {
 
         {entries.length === 0 && !isAdding ? (
           <div className="text-center py-12 px-4">
-            <Sparkles className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <SparklesIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <p className="text-muted-foreground">Nenhuma entrada no diário</p>
             <p className="text-sm text-muted-foreground mt-1">Registre seus pensamentos e sentimentos</p>
           </div>

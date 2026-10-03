@@ -1,47 +1,5 @@
-import type { Quote, Habit, Goal, Achievement } from "./types"
+import type { Habit, Goal, Achievement, Relapse } from "./types"
 
-export const defaultQuotes: Quote[] = [
-  {
-    id: "1",
-    text: "A jornada de mil milhas começa com um único passo.",
-    author: "Lao Tzu",
-  },
-  {
-    id: "2",
-    text: "Podemos encontrar muitas derrotas mas não devemos ser derrotados.",
-    author: "Maya Angelou",
-  },
-  {
-    id: "3",
-    text: "O sucesso não é final, o fracasso não é fatal: é a coragem de continuar que conta.",
-    author: "Winston Churchill",
-  },
-  {
-    id: "4",
-    text: "Você não pode voltar e mudar o começo, mas pode começar onde está e mudar o final.",
-    author: "C.S. Lewis",
-  },
-  {
-    id: "5",
-    text: "Cada dia é uma nova chance de mudar sua vida.",
-    author: "Anônimo",
-  },
-  {
-    id: "6",
-    text: "A força não vem da capacidade física. Vem de uma vontade indomável.",
-    author: "Mahatma Gandhi",
-  },
-  {
-    id: "7",
-    text: "O único modo de fazer um excelente trabalho é amar o que você faz.",
-    author: "Steve Jobs",
-  },
-  {
-    id: "8",
-    text: "Acredite que você pode e você já está no meio do caminho.",
-    author: "Theodore Roosevelt",
-  },
-]
 
 export const defaultGoals: Omit<Goal, "id" | "habitId" | "achieved" | "achievedAt">[] = [
   { name: "24 Horas", days: 1 },
@@ -92,7 +50,7 @@ export const mockHabits: Habit[] = [
     icon: "alcohol",
     color: "#3B82F6",
     startDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000 - 3 * 60 * 60 * 1000),
-    costPerDay: 25,
+
     frequency: 1,
     isActive: true,
   },
@@ -102,7 +60,7 @@ export const mockHabits: Habit[] = [
     icon: "social",
     color: "#6366F1",
     startDate: new Date(Date.now() - 55 * 24 * 60 * 60 * 1000),
-    costPerDay: 0,
+
     frequency: 10,
     isActive: true,
   },
@@ -112,7 +70,7 @@ export const mockHabits: Habit[] = [
     icon: "procrastination",
     color: "#10B981",
     startDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000 - 6 * 60 * 60 * 1000),
-    costPerDay: 0,
+
     frequency: 1,
     isActive: true,
   },
@@ -133,4 +91,28 @@ export const mockAchievements: Achievement[] = [
     name: "3 Dias",
     unlockedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
   },
+]
+
+export const mockRelapses: Relapse[] = [
+  {
+    id: "101",
+    habitId: "1", // Álcool
+    date: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000), // Há 15 dias
+    note: "Festa de aniversário",
+    duration: 7 * 24 * 60 * 60, // Durou 7 dias
+  },
+  {
+    id: "102",
+    habitId: "1", // Álcool
+    date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000 - 3 * 60 * 60 * 1000), 
+    note: "Fim de semana",
+    duration: 10 * 24 * 60 * 60, // Durou 10 dias
+  },
+  {
+    id: "201",
+    habitId: "2", // Redes Sociais
+    date: new Date(Date.now() - 55 * 24 * 60 * 60 * 1000), 
+    note: "Puro tédio",
+    duration: 3 * 24 * 60 * 60, // Durou 3 dias
+  }
 ]

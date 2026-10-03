@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react"
 import type { Habit, Goal, Achievement, Relapse, DiaryEntry } from "@/lib/types"
-import { mockHabits, mockAchievements, defaultGoals } from "@/lib/data"
+import { mockHabits, mockAchievements, defaultGoals, mockRelapses } from "@/lib/data"
 
 const STORAGE_KEY = "lifri-habits"
 const GOALS_KEY = "lifri-goals"
@@ -60,6 +60,8 @@ export function useHabits() {
     if (storedRelapses) {
       const parsed = JSON.parse(storedRelapses)
       setRelapses(parsed.map((r: Relapse) => ({ ...r, date: new Date(r.date) })))
+    } else {
+      setRelapses(mockRelapses)
     }
 
     if (storedDiary) {

@@ -4,7 +4,7 @@ export interface Habit {
   icon: string
   color: string
   startDate: Date
-  costPerDay?: number
+
   frequency: number
   isActive: boolean
 }
@@ -42,10 +42,12 @@ export interface DiaryEntry {
   note: string
 }
 
-export interface Quote {
+export interface Note {
   id: string
   text: string
-  author: string
+  author?: string
+  isQuote: boolean
+  createdAt: Date
 }
 
 export interface Statistics {

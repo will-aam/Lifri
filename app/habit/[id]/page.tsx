@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, use } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, usePathname } from "next/navigation"
 import { MobileShell } from "@/components/mobile-shell"
 import { HabitHeader } from "@/components/habit-header"
 import { CircularProgress } from "@/components/circular-progress"
@@ -9,9 +9,22 @@ import { Calendar } from "@/components/calendar"
 import { ResetTimerModal } from "@/components/reset-timer-modal"
 import { Button } from "@/components/ui/button"
 import { useHabits } from "@/hooks/use-habits"
-import { formatDurationLong, getElapsedSeconds, formatMoney, calculateSavings } from "@/lib/utils"
-import { Book, Sparkles, BarChart3, Trophy, RotateCcw } from "lucide-react"
+import { formatDurationLong, getElapsedSeconds } from "@/lib/utils"
+import { cn } from "@/lib/utils"
 import Link from "next/link"
+import {
+  BookOpenIcon as BookOpenOutline,
+  SparklesIcon as SparklesOutline,
+  ChartBarIcon as ChartBarOutline,
+  TrophyIcon as TrophyOutline,
+  ArrowPathIcon
+} from "@heroicons/react/24/outline"
+import {
+  BookOpenIcon as BookOpenSolid,
+  SparklesIcon as SparklesSolid,
+  ChartBarIcon as ChartBarSolid,
+  TrophyIcon as TrophySolid
+} from "@heroicons/react/24/solid"
 
 interface HabitDetailPageProps {
   params: Promise<{ id: string }>
@@ -20,6 +33,7 @@ interface HabitDetailPageProps {
 export default function HabitDetailPage({ params }: HabitDetailPageProps) {
   const { id } = use(params)
   const router = useRouter()
+  const pathname = usePathname()
   const { habits, resetTimer, getHabitRelapses, mounted } = useHabits()
   const [elapsed, setElapsed] = useState(0)
   const [showResetModal, setShowResetModal] = useState(false)
@@ -67,12 +81,20 @@ export default function HabitDetailPage({ params }: HabitDetailPageProps) {
     resetTimer(habit.id, `Recaida marcada no calendario`, date)
   }
 
+  const navItems = [
+    { href: `/habit/${id}/diary`, outlineIcon: BookOpenOutline, solidIcon: BookOpenSolid, isAction: false },
+    { href: `/habit/${id}/goals`, outlineIcon: TrophyOutline, solidIcon: TrophySolid, isAction: false },
+    { href: "#", outlineIcon: ArrowPathIcon, solidIcon: ArrowPathIcon, isAction: true },
+    { href: `/habit/${id}/stats`, outlineIcon: ChartBarOutline, solidIcon: ChartBarSolid, isAction: false },
+    { href: `/habit/${id}/reasons`, outlineIcon: SparklesOutline, solidIcon: SparklesSolid, isAction: false },
+  ]
+
   return (
     <MobileShell>
       <HabitHeader title={habit.name} habitId={habit.id} />
 
-      <main className="flex-1 overflow-y-auto overscroll-contain">
-        <div className="p-4 pb-8 space-y-4">
+      <main className="flex-1 flex flex-col overflow-hidden pb-24">
+        <div className="flex-1 p-4 flex flex-col justify-between">
           {/* Progress Circle */}
           <div className="flex flex-col items-center py-3 sm:py-4">
             <CircularProgress startDate={habit.startDate} goalDays={7} color={habit.color} size={180} />
@@ -80,14 +102,9 @@ export default function HabitDetailPage({ params }: HabitDetailPageProps) {
           </div>
 
           {/* Timer Display */}
-          <div className="text-center space-y-1 pb-4 border-b border-border">
+          <div className="text-center space-y-1">
             <p className="text-xs sm:text-sm text-muted-foreground">Tempo de Abstinencia</p>
             <p className="text-2xl sm:text-3xl font-bold text-foreground tabular-nums">{formatDurationLong(elapsed)}</p>
-            {habit.costPerDay && habit.costPerDay > 0 && (
-              <p className="text-success font-medium text-sm">
-                Economizado: {formatMoney(calculateSavings(habit.costPerDay, elapsed))}
-              </p>
-            )}
           </div>
 
           <Calendar
@@ -97,67 +114,47 @@ export default function HabitDetailPage({ params }: HabitDetailPageProps) {
             onMarkRelapse={handleCalendarRelapse}
             editable={true}
           />
-
-          {/* Reset Button */}
-          <Button
-            variant="outline"
-            className="w-full h-11 sm:h-12 text-destructive border-destructive/30 hover:bg-destructive/10 active:bg-destructive/20 bg-transparent gap-2 text-sm sm:text-base"
-            onClick={() => setShowResetModal(true)}
-          >
-            <RotateCcw className="h-4 w-4" />
-            Resetar Timer
-          </Button>
-
-          {/* Quick Links */}
-          <div className="space-y-2">
-            <Link href={`/habit/${id}/diary`} className="block">
-              <div className="bg-card border border-border rounded-xl p-3.5 sm:p-4 active:border-primary/30 transition-colors flex items-center gap-3 sm:gap-4 card-press">
-                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                  <Book className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium text-foreground text-sm sm:text-base">Ver Diario</p>
-                  <p className="text-[11px] sm:text-xs text-muted-foreground">Registre seus pensamentos</p>
-                </div>
-              </div>
-            </Link>
-
-            <Link href={`/habit/${id}/goals`} className="block">
-              <div className="bg-card border border-border rounded-xl p-3.5 sm:p-4 active:border-primary/30 transition-colors flex items-center gap-3 sm:gap-4 card-press">
-                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-success/10 flex items-center justify-center shrink-0">
-                  <Trophy className="h-4 w-4 sm:h-5 sm:w-5 text-success" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium text-foreground text-sm sm:text-base">Trofeus</p>
-                  <p className="text-[11px] sm:text-xs text-muted-foreground">Veja suas conquistas</p>
-                </div>
-              </div>
-            </Link>
-          </div>
-
-          {/* Options Section */}
-          <div className="pt-2">
-            <h3 className="text-xs sm:text-sm font-medium text-muted-foreground uppercase tracking-wide mb-2.5 sm:mb-3">
-              Opcoes
-            </h3>
-            <div className="space-y-2">
-              <Link href={`/habit/${id}/stats`} className="block">
-                <div className="bg-card border border-border rounded-xl p-3.5 sm:p-4 active:border-primary/30 transition-colors flex items-center gap-3 sm:gap-4 card-press">
-                  <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 text-primary shrink-0" />
-                  <span className="font-medium text-foreground text-sm sm:text-base">Estatisticas</span>
-                </div>
-              </Link>
-
-              <Link href={`/habit/${id}/reasons`} className="block">
-                <div className="bg-card border border-border rounded-xl p-3.5 sm:p-4 active:border-primary/30 transition-colors flex items-center gap-3 sm:gap-4 card-press">
-                  <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500 shrink-0" />
-                  <span className="font-medium text-foreground text-sm sm:text-base">Minhas Razoes</span>
-                </div>
-              </Link>
-            </div>
-          </div>
         </div>
       </main>
+
+      {/* Details Bottom Nav */}
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 safe-bottom w-full max-w-[340px] px-4">
+        <nav className="bg-card/95 backdrop-blur-xl border border-border rounded-full p-2 shadow-2xl flex items-center justify-between relative">
+          {navItems.map((item, i) => {
+            if (item.isAction) {
+              return (
+                <button
+                  key="action"
+                  onClick={() => setShowResetModal(true)}
+                  className="relative z-10 w-[50px] h-[50px] rounded-full flex items-center justify-center shrink-0 touch-feedback group"
+                  aria-label="Reiniciar cronometro"
+                >
+                  <div className="absolute inset-0 rounded-full bg-destructive shadow-lg shadow-destructive/30 transition-transform group-active:scale-95 group-hover:scale-105 duration-200" />
+                  <item.solidIcon className="h-6 w-6 text-destructive-foreground relative z-10" />
+                </button>
+              )
+            }
+
+            const isActive = pathname === item.href
+            const Icon = isActive ? item.solidIcon : item.outlineIcon
+            
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "relative z-10 w-[50px] h-[50px] rounded-full flex items-center justify-center transition-colors touch-feedback",
+                  isActive
+                    ? "text-primary"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <Icon className={cn("h-[22px] w-[22px] transition-transform duration-300", isActive ? "scale-110" : "scale-100")} />
+              </Link>
+            )
+          })}
+        </nav>
+      </div>
 
       <ResetTimerModal
         isOpen={showResetModal}

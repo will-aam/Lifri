@@ -28,7 +28,7 @@ model Habit {
   icon        String   @default("cigarette") // ícone do hábito
   color       String   @default("#F43F5E") // cor personalizada
   startDate   DateTime @default(now()) // data que começou a abstinência
-  costPerDay  Float?   // custo diário do vício (para calcular economia)
+
   frequency   Int      @default(1) // vezes por dia
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())

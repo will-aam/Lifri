@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { cn } from "@/lib/utils"
-import { ChevronLeft, ChevronRight, Info, AlertTriangle, X } from "lucide-react"
+import { ChevronLeftIcon, ChevronRightIcon, InformationCircleIcon, ExclamationTriangleIcon, XMarkIcon } from "@heroicons/react/24/outline"
 import { Button } from "@/components/ui/button"
 
 interface CalendarProps {
@@ -122,17 +122,7 @@ export function Calendar({
   return (
     <>
       <div className="bg-card rounded-2xl border border-border overflow-hidden">
-        <div className="flex items-center justify-between p-3 sm:p-4 border-b border-border">
-          <h3 className="font-semibold text-foreground text-sm sm:text-base">Calendario</h3>
-          <div className="flex items-center gap-2">
-            {editable && (
-              <span className="text-[10px] sm:text-xs text-muted-foreground">Toque para marcar recaida</span>
-            )}
-            <button className="p-1.5 text-muted-foreground hover:text-foreground rounded-lg touch-feedback">
-              <Info className="h-4 w-4 sm:h-5 sm:w-5" />
-            </button>
-          </div>
-        </div>
+
 
         <div className="p-3 sm:p-4">
           <div className="flex items-center justify-between mb-3">
@@ -140,7 +130,7 @@ export function Calendar({
               onClick={prevMonth}
               className="p-2.5 hover:bg-muted active:bg-muted/80 rounded-lg transition-colors touch-feedback"
             >
-              <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
+              <ChevronLeftIcon className="h-4 w-4 sm:h-5 sm:w-5" />
             </button>
             <span className="font-medium text-foreground capitalize text-sm sm:text-base">
               {MONTHS[month]} {year}
@@ -149,7 +139,7 @@ export function Calendar({
               onClick={nextMonth}
               className="p-2.5 hover:bg-muted active:bg-muted/80 rounded-lg transition-colors touch-feedback"
             >
-              <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
+              <ChevronRightIcon className="h-4 w-4 sm:h-5 sm:w-5" />
             </button>
           </div>
 
@@ -198,17 +188,7 @@ export function Calendar({
             })}
           </div>
 
-          {/* Legenda */}
-          <div className="flex items-center justify-center gap-4 mt-4 pt-3 border-t border-border">
-            <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: `${color}25` }} />
-              <span className="text-[10px] sm:text-xs text-muted-foreground">Sucesso</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded-full bg-destructive/20" />
-              <span className="text-[10px] sm:text-xs text-muted-foreground">Recaida</span>
-            </div>
-          </div>
+
         </div>
       </div>
 
@@ -220,12 +200,12 @@ export function Calendar({
               onClick={() => setShowConfirmModal(false)}
               className="absolute top-4 right-4 p-2 hover:bg-muted rounded-full touch-feedback"
             >
-              <X className="h-5 w-5 text-muted-foreground" />
+              <XMarkIcon className="h-5 w-5 text-muted-foreground" />
             </button>
 
             <div className="flex flex-col items-center text-center">
               <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center mb-4">
-                <AlertTriangle className="h-8 w-8 text-destructive" />
+                <ExclamationTriangleIcon className="h-8 w-8 text-destructive" />
               </div>
 
               <h3 className="text-lg font-semibold text-foreground mb-2">Marcar Recaida</h3>
